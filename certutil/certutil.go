@@ -21,11 +21,15 @@ func PemPrivateKeyFromPkcs12(b64pkcs12 string) string {
 		panic(err)
 	}
 
-	// Append all PEM Blocks together
-	var pemData []byte
-	for _, b := range blocks {
-		pemData = append(pemData, pem.EncodeToMemory(b)...)
-	}
+  // TODO ugly hack
+  // order of pfx blocks is wrong:
+  // <private_key> <intermediate_ca_crt> <server_crt>
+  // tls.X509KeyPair compares <private_key> and <intermediate_ca_crt>
+  // and fails with tls: private key does not match public key
+  var pemData []byte
+  pemData = append(pemData, pem.EncodeToMemory(blocks[0])...) // private_key
+  pemData = append(pemData, pem.EncodeToMemory(blocks[2])...) // server_crt
+  pemData = append(pemData, pem.EncodeToMemory(blocks[1])...) // intermediate_ca_crt
 
 	return PemPrivateKeyFromPem(string(pemData))
 }
@@ -64,11 +68,15 @@ func PemCertFromPkcs12(b64pkcs12 string) string {
 		panic(err)
 	}
 
-	// Append all PEM Blocks together
-	var pemData []byte
-	for _, b := range blocks {
-		pemData = append(pemData, pem.EncodeToMemory(b)...)
-	}
+  // TODO ugly hack
+  // order of pfx blocks is wrong:
+  // <private_key> <intermediate_ca_crt> <server_crt>
+  // tls.X509KeyPair compares <private_key> and <intermediate_ca_crt>
+  // and fails with tls: private key does not match public key
+  var pemData []byte
+  pemData = append(pemData, pem.EncodeToMemory(blocks[0])...) // private_key
+  pemData = append(pemData, pem.EncodeToMemory(blocks[2])...) // server_crt
+  pemData = append(pemData, pem.EncodeToMemory(blocks[1])...) // intermediate_ca_crt
 
 	return PemCertFromPem(string(pemData))
 }
@@ -116,11 +124,15 @@ func PemChainFromPkcs12(b64pkcs12 string, justIssuers bool) string {
 		panic(err)
 	}
 
-	// Append all PEM Blocks together
-	var pemData []byte
-	for _, b := range blocks {
-		pemData = append(pemData, pem.EncodeToMemory(b)...)
-	}
+  // TODO ugly hack
+  // order of pfx blocks is wrong:
+  // <private_key> <intermediate_ca_crt> <server_crt>
+  // tls.X509KeyPair compares <private_key> and <intermediate_ca_crt>
+  // and fails with tls: private key does not match public key
+  var pemData []byte
+  pemData = append(pemData, pem.EncodeToMemory(blocks[0])...) // private_key
+  pemData = append(pemData, pem.EncodeToMemory(blocks[2])...) // server_crt
+  pemData = append(pemData, pem.EncodeToMemory(blocks[1])...) // intermediate_ca_crt
 
 	return PemChainFromPem(string(pemData), justIssuers)
 }
